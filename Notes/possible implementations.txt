@@ -1,0 +1,43 @@
+possible game mechanics:
+
+/////////////////////////
+
+add a combat system
+> player can drage mouse in certain areas of the screen to perform a dodge or parry an opponent.
+> possible implementation method:
+if (opponent_IsAttacking) {
+	if (mouseInArea)
+		if (mouseDraggedDistance > parryDistance)
+			opponet_parried();
+}
+
+add a UI that everything occurs in
+main {
+	drawUI(Scene) // draws ui + scene
+}
+
+
+/////////////////////////
+
+implement scenes in queue(s)
+Queue<Scene> scene;
+// if we decide to implement more than one pathway
+Queue<Scene> sceneDungeon1;
+Queue<Scene> sceneDungeon2;
+Queue<Scene> sceneForest1;
+Queue<Scene> sceneForest2;
+
+arrays could work, but queues might be better, more expandable.
+
+/////////////////////////
+
+Scene class
+
++ Queue<SceneEvents>
+
++ run(): void // runs the scene selected
+
+implement a foreach loop to go through each scene. add a continuation status for each scene (while loops that won't break until the user solves a puzzle, beats an enemy, etc...)
+
+/////////////////////////
+
