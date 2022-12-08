@@ -11,6 +11,11 @@ public class Weapon extends Item {
 		this.damage = damage;
 		this.swingSpeed = swingSpeed;
 	}
+	public Weapon() { //default weapon
+		super("No Weapon");
+		this.damage = 1;
+		this.swingSpeed = 500;
+	}
 	
 	/* methods */
 	public int damage() {

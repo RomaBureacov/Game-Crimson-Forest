@@ -9,7 +9,10 @@ public class Armor extends Item {
 		super(name);
 		this.armor = armor;
 	}
-	
+	public Armor() { // default armor
+		super("No armor");
+		this.armor = 0;
+	}
 	/* methods */
 	public int value() {
 		return armor;

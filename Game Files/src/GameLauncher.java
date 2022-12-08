@@ -2,15 +2,23 @@
  * 
  */
 
-import java.util.Stack;
-
-import ItemsAndCharacters.CharacterEntity;
-import ItemsAndCharacters.Weapon;
+/*
+ * Implementation notes:
+ * this class will be the master class, and it will be in charge of throwing the player into the various scenes.
+ * This class will store the character data, passing it to scenes.
+ */
 
 public class GameLauncher {
 	public static void main(String[] args) {
-		ItemsAndCharacters.CharacterEntity character1 = new CharacterEntity("John Barosa", 100, 100);
-		ItemsAndCharacters.CharacterEntity character2 = new CharacterEntity("John Warosa", 100, 100);
+		ScenesAndUI.PlayerUI ui = new ScenesAndUI.PlayerUI(new ItemsAndCharacters.CharacterEntity("player", 100, 100));
+		// exampleOfEntities();
+	}
+	
+	// just an example method to showcase the ItemsAndCharacters package
+	private static void exampleOfEntities() {
+
+		final ItemsAndCharacters.CharacterEntity character1 = new ItemsAndCharacters.CharacterEntity("John Barosa", 100, 100);
+		final ItemsAndCharacters.CharacterEntity character2 = new ItemsAndCharacters.CharacterEntity("John Warosa", 100, 100);
 		character1.giveArmor(new ItemsAndCharacters.Armor("Basic Steel Plate", 5));
 		
 		System.out.println(character1);
@@ -23,9 +31,9 @@ public class GameLauncher {
 		System.out.println(character2.name() + ": \"Of course! why would I not? you are a mere squabbler!\"");
 		System.out.println(character1.name() + ": \"Then so be it! take a sword and we shall see who survives...\"");
 		
-		character1.giveWeapon(new Weapon("Steel sword", 20, 500));
+		character1.giveWeapon(new ItemsAndCharacters.Weapon("Steel sword", 20, 500));
 		System.out.println(character1.name() + " picks up a " + character1.weapon().name());
-		character2.giveWeapon(new Weapon("Steel sword", 20, 500));
+		character2.giveWeapon(new ItemsAndCharacters.Weapon("Steel sword", 20, 500));
 		System.out.println(character2.name() + " picks up a " + character2.weapon().name());
 		System.out.println();
 		
@@ -55,5 +63,6 @@ public class GameLauncher {
 		}
 		
 		System.out.println(character2.name() + ": \"and there you go, " + character1.name() + "... a fool as you always were\"");
+	
 	}
 }
