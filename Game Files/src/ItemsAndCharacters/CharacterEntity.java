@@ -4,8 +4,6 @@
 
 package ItemsAndCharacters;
 
-import java.util.ArrayList;
-
 public class CharacterEntity {
 	/* variables */
 	private String name;
@@ -13,10 +11,10 @@ public class CharacterEntity {
 	private final int MAX_HEALTH;
 	private Weapon weapon = new Weapon();
 	private Armor armor = new Armor();
-	private Inventory inventory = new Inventory(); 
+	private Inventory inventory; 
 
 	/* constructors */
-	public CharacterEntity(String name, int health, int MAX_HEALTH) throws IllegalArgumentException {
+	public CharacterEntity(String name, int health, int MAX_HEALTH, int inventorySize) throws IllegalArgumentException {
 		name = name.trim();
 		if (name.length() == 0)
 			throw new IllegalArgumentException("Name cannot be empty");
@@ -28,6 +26,7 @@ public class CharacterEntity {
 		this.name = name;
 		this.health = health;
 		this.MAX_HEALTH = MAX_HEALTH;
+		this.inventory = new Inventory(inventorySize);
 	}
 	
 	/* methods */
@@ -55,7 +54,8 @@ public class CharacterEntity {
 	// give a weapon to the character entity and return the weapon they had previously
 	public Weapon giveWeapon(Weapon weapon) {
 		Weapon exchangedWeapon = this.weapon;
-		this.weapon = (weapon == null) ? new Weapon("No weapon", 1, 500) : weapon; // give "no weapon" for a null argument
+		// TODO create a default no weapon icon and apply path
+		this.weapon = (weapon == null) ? new Weapon() : weapon; // give "no weapon" for a null argument
 		return exchangedWeapon;
 	}
 	public Weapon dropWeapon() {
@@ -72,6 +72,16 @@ public class CharacterEntity {
 		return giveArmor(null);
 	}
 	
+	// give and take items from the entity inventory
+	public void giveItem(Item item) {
+		inventory.add(item);
+	}
+	public Item dropItem(Item item) {
+		return inventory.remove(item);
+	}
+	public Item dropItem(String itemName) {
+		return inventory.remove(itemName);
+	}
 	
 	// TODO: implement ways to do damage
 	public void attack(CharacterEntity entity) {

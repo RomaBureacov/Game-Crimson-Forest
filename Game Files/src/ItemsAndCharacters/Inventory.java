@@ -10,6 +10,10 @@ public class Inventory {
 	public Inventory(int maxSize) {
 		this.maxSize = maxSize;
 		inventory.ensureCapacity(maxSize);
+		for (int i = 0; i < maxSize; i++) {
+			inventory.add(null);
+		}
+		defaultFill();
 	}
 	
 	/* methods */
@@ -20,6 +24,9 @@ public class Inventory {
 			inventory.add(item);
 		else
 			throw new IndexOutOfBoundsException("Too many items");
+	}
+	public Item replace(int index, Item item) throws NoItemException {
+		return inventory.set(index, item);
 	}
 	
 	// remove methods
@@ -33,9 +40,11 @@ public class Inventory {
 		// default
 		throw new NoItemException("No such item: " + itemName);
 	}
-	
+	// replace the old item with a default item and return the old item
 	public Item remove(Item item) throws NoItemException {
-		return remove(item.name());
+		Item returnItem = remove(item.name());
+		add(new Item());
+		return returnItem;
 	}
 	
 	public Item getItem(String itemName) throws NoItemException {
@@ -46,6 +55,9 @@ public class Inventory {
 		
 		// default
 		throw new NoItemException("No such item: " + itemName);
+	}
+	public Item getItem(int index) {
+		return inventory.get(index);
 	}
 	
 	public void clear() {
@@ -71,6 +83,17 @@ public class Inventory {
 	
 	public boolean isEmpty() {
 		return inventory.size() == 0;
+	}
+	
+	public int maxSize() {
+		return maxSize;
+	}
+	
+	// fill with default items
+	public void defaultFill() {
+		for (int i = 0; i < maxSize; i++) {
+			inventory.set(i, new Item());
+		}
 	}
 	
 	@Override

@@ -10,15 +10,16 @@
 
 public class GameLauncher {
 	public static void main(String[] args) {
-		ScenesAndUI.PlayerUI ui = new ScenesAndUI.PlayerUI(new ItemsAndCharacters.CharacterEntity("player", 100, 100));
 		// exampleOfEntities();
+		ScenesAndUI.PlayerUI ui = new ScenesAndUI.PlayerUI(new ItemsAndCharacters.CharacterEntity("player", 100, 100, 6));
+		
 	}
 	
 	// just an example method to showcase the ItemsAndCharacters package
-	private static void exampleOfEntities() {
+	private static void exampleOfEntities() throws Exception {
 
-		final ItemsAndCharacters.CharacterEntity character1 = new ItemsAndCharacters.CharacterEntity("John Barosa", 100, 100);
-		final ItemsAndCharacters.CharacterEntity character2 = new ItemsAndCharacters.CharacterEntity("John Warosa", 100, 100);
+		final ItemsAndCharacters.CharacterEntity character1 = new ItemsAndCharacters.CharacterEntity("John Barosa", 100, 100, 0);
+		final ItemsAndCharacters.CharacterEntity character2 = new ItemsAndCharacters.CharacterEntity("John Warosa", 100, 100, 0);
 		character1.giveArmor(new ItemsAndCharacters.Armor("Basic Steel Plate", 5));
 		
 		System.out.println(character1);

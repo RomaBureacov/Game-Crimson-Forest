@@ -31,8 +31,8 @@ public class PlayerUI {
 	private JComponent playerHealthBar; // shows player health, the bar itself
 	Dimension healthBarDimensions = new Dimension(300, 50);
 	
-	private JComponent UI_playerInventory; // UI player inventory component
-	private JComponent UI_playerInventoryEquipped; // UI player equipped inventory component
+	private UI_Inventory UI_playerInventory; // UI player inventory component
+	private UI_Inventory UI_playerInventoryEquipped; // UI player equipped inventory component
 	
 	// color palette
 	final Color TRANSPARENT_BLACK = new Color(0, 0, 0, 150);
@@ -62,6 +62,7 @@ public class PlayerUI {
 	// TODO
 	// build the UI and its components
 	private void build() {
+		
 		/*** BUILD USER INTERFACE ***/
 		// build main
 		gameFrame.setSize(1000, 750);
@@ -102,47 +103,62 @@ public class PlayerUI {
 		UI_playerHealthBar.setBounds(10, (int)(gameFrame.getHeight() - healthBarDimensions.getHeight() - 10 - 50), healthBarDimensions.width + 10, healthBarDimensions.height + 10);
 		gameScreen.add(UI_playerHealthBar, INTERFACE_USER);
 		
-		/* UI player inventory component */
-		//UI_playerInventoryEquipped = new EquippedInventory().getModule();
-		UI_playerInventoryEquipped = new Inventory(2).getModule();
-		UI_playerInventoryEquipped.setLocation(gameFrame.getWidth() / 2 - UI_playerInventoryEquipped.getWidth() / 2
-												, gameFrame.getHeight() - UI_playerInventoryEquipped.getHeight() - 50);
-		gameScreen.add(UI_playerInventoryEquipped, INTERFACE_USER);
-		
 		/* UI player equipped inventory component */
-		UI_playerInventory = new Inventory(6).getModule();
-		UI_playerInventory.setLocation(gameFrame.getWidth() - UI_playerInventory.getWidth() - 26
-										, gameFrame.getHeight() - UI_playerInventory.getHeight() - 50);
-		gameScreen.add(UI_playerInventory, INTERFACE_USER);
+		// build equipped inventory
+		UI_playerInventoryEquipped = new UI_Inventory(2, new ItemsAndCharacters.Inventory(2));
+		JComponent playerInventoryEquipped = UI_playerInventoryEquipped.getModule();
+		playerInventoryEquipped.setLocation(gameFrame.getWidth() / 2 - playerInventoryEquipped.getWidth() / 2
+												, gameFrame.getHeight() - playerInventoryEquipped.getHeight() - 50);
+		UI_playerInventoryEquipped.replace(0, new ItemsAndCharacters.Item());
+		UI_playerInventoryEquipped.replace(1, new ItemsAndCharacters.Item());
+		gameScreen.add(playerInventoryEquipped, INTERFACE_USER);
+		
+		/* UI player inventory component */
+		UI_playerInventory = new UI_Inventory(player.inventory().maxSize(), player.inventory());
+		JComponent playerInventory = UI_playerInventory.getModule();
+		playerInventory.setLocation(gameFrame.getWidth() - playerInventory.getWidth() - 26
+				, gameFrame.getHeight() - playerInventory.getHeight() - 50);
+		gameScreen.add(playerInventory, INTERFACE_USER);
 		
 		/*** BUILD FOREGROUND ***/
-		
+		//TODO method stub
 		/*** BUILD BACKGROUND ***/
-		
+		//TODO method stub
 		// make master layout
 		gameFrame.add(gameScreen);
 		
 	}
 	
+	/* METHODS TO UPDATE UI */
 	// update the health bar to match the player's health
 	private void updateHealth() {
 		playerHealthBar.setSize((int) ((double)player.health() / player.maxHealth() * healthBarDimensions.width), healthBarDimensions.height);
 		gameScreen.repaint();
 	}
+	// update the inventory
+	private void updateScreen() {
+		gameScreen.repaint();
+	}
+	// update the equipped inventory
 	
 	/* subclasses */
 	// inventory class, to hold items
-	private class Inventory {
+	private class UI_Inventory {
 		/* variables */
 		private JComponent inventoryModule;
 		private final int SLOT_SIZE = 50;
 		private JPanel itemBackground;
 		private JPanel itemForeground;
 		private Dimension moduleSize;
+		private JLabel[] inventorySlots;
+		private ItemsAndCharacters.Inventory inventory;
 		
 		/* constructors */
 		// build the module
-		public Inventory(int numberSlots) {
+		public UI_Inventory(int numberSlots, ItemsAndCharacters.Inventory inventory) {
+			inventorySlots = new JLabel[numberSlots];
+			this.inventory = inventory;
+			
 			inventoryModule = new JLayeredPane();
 			inventoryModule.setOpaque(true);
 			inventoryModule.setBackground(TRANSPARENT_BLACK);
@@ -172,14 +188,15 @@ public class PlayerUI {
 			}
 			inventoryModule.add(itemBackground, 0);
 
-			// item foregrounds
+			// item foregrounds (item icons)
 			itemForeground = new JPanel(new GridBagLayout());
 			constraints = new GridBagConstraints();
 			itemForeground.setBackground(TRANSPARENT_BLACK);
 			itemForeground.setOpaque(false);
 			itemForeground.setSize(moduleSize);
 			for (byte i = 0; i < numberSlots; i++) {
-				ItemIcon label = new ItemIcon(null);
+				ItemIcon label = new ItemIcon(new ItemsAndCharacters.Item());
+				inventorySlots[i] = label;
 				label.setBackground(Color.WHITE);
 				label.setOpaque(true);
 				label.setSize(SLOT_SIZE, SLOT_SIZE);
@@ -192,6 +209,7 @@ public class PlayerUI {
 				itemForeground.add(label, constraints);
 			}
 			inventoryModule.add(itemForeground, 0);
+			
 		}
 		
 		/* methods */
@@ -200,24 +218,29 @@ public class PlayerUI {
 			return inventoryModule;
 		}
 		
-		public ItemsAndCharacters.Item remove(String itemName) {
+		public ItemsAndCharacters.Item take(String itemName) {
 			//TODO method stub
 			return new ItemsAndCharacters.Item(itemName);
 		}
 		
-		public ItemsAndCharacters.Item remove(int itemIndex) {
+		public ItemsAndCharacters.Item take(int itemIndex) {
 			// TODO method stub
 			return new ItemsAndCharacters.Item("");
 		}
-		
-		public void add(String itemName) {
+		// adds item to player inventory and rebuild the UI inventory 
+		public void give(ItemsAndCharacters.Item item) {
 			//TODO method stub
-			
+			player.giveItem(item);
+			for (int i = 0; i < inventorySlots.length; i++)
+				((ItemIcon)inventorySlots[i]).setItem(player.inventory().getItem(i));
+		}
+		
+		public ItemsAndCharacters.Item replace(int itemIndex, ItemsAndCharacters.Item item) {
+			return this.inventory.replace(itemIndex, item);
 		}
 		
 		/* subclasses */
 		private class ItemIcon extends JLabel {
-			//TODO make an acceptor for images and a default image for icons.
 			/* variables */
 			private ItemsAndCharacters.Item item;
 			
@@ -225,11 +248,19 @@ public class PlayerUI {
 			public ItemIcon(ItemsAndCharacters.Item item) {
 				super();
 				this.item = item;
+				this.setIcon(icon());
+				this.setPreferredSize(new Dimension(SLOT_SIZE, SLOT_SIZE));
+				this.setSize(SLOT_SIZE, SLOT_SIZE);
 			}
 			
 			/* methods */
-			public String itemName() {
-				return item.name();
+			public ImageIcon icon() {
+				return item.icon();
+			}
+			
+			// TODO make this change the item icon as well
+			public void setItem(ItemsAndCharacters.Item item) {
+				this.item = item;
 			}
 		}
 		
