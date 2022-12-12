@@ -33,6 +33,8 @@ public class PlayerUI {
 	
 	private UI_Inventory UI_playerInventory; // UI player inventory component
 	private UI_Inventory UI_playerInventoryEquipped; // UI player equipped inventory component
+	private final int UI_ARMOR = 0;
+	private final int UI_WEAPON = 1;
 	
 	// color palette
 	final Color TRANSPARENT_BLACK = new Color(0, 0, 0, 150);
@@ -109,9 +111,14 @@ public class PlayerUI {
 		JComponent playerInventoryEquipped = UI_playerInventoryEquipped.getModule();
 		playerInventoryEquipped.setLocation(gameFrame.getWidth() / 2 - playerInventoryEquipped.getWidth() / 2
 												, gameFrame.getHeight() - playerInventoryEquipped.getHeight() - 50);
-		UI_playerInventoryEquipped.replace(0, new ItemsAndCharacters.Item());
-		UI_playerInventoryEquipped.replace(1, new ItemsAndCharacters.Item());
+		
+		UI_playerInventoryEquipped.replace(UI_WEAPON, player.weapon());
+		UI_playerInventoryEquipped.replace(UI_ARMOR, player.armor());
+		System.out.println("weapon: " + player.weapon());
+		System.out.println("armor: " + player.armor());
+		
 		gameScreen.add(playerInventoryEquipped, INTERFACE_USER);
+		
 		
 		/* UI player inventory component */
 		UI_playerInventory = new UI_Inventory(player.inventory().maxSize(), player.inventory());
@@ -150,13 +157,13 @@ public class PlayerUI {
 		private JPanel itemBackground;
 		private JPanel itemForeground;
 		private Dimension moduleSize;
-		private JLabel[] inventorySlots;
+		private ItemIcon[] inventorySlots;
 		private ItemsAndCharacters.Inventory inventory;
 		
 		/* constructors */
 		// build the module
 		public UI_Inventory(int numberSlots, ItemsAndCharacters.Inventory inventory) {
-			inventorySlots = new JLabel[numberSlots];
+			inventorySlots = new ItemIcon[numberSlots];
 			this.inventory = inventory;
 			
 			inventoryModule = new JLayeredPane();
@@ -202,20 +209,24 @@ public class PlayerUI {
 				label.setSize(SLOT_SIZE, SLOT_SIZE);
 				constraints.fill = GridBagConstraints.NONE;
 				constraints.insets = new Insets(MARGIN + 5, MARGIN + 5, MARGIN + 5, MARGIN + 5);
-				constraints.ipadx = SLOT_SIZE - 10;
-				constraints.ipady = SLOT_SIZE - 10;
 				constraints.gridx = i;
 				constraints.gridy = 0;
 				itemForeground.add(label, constraints);
 			}
 			inventoryModule.add(itemForeground, 0);
-			
 		}
 		
 		/* methods */
 		// return the module
 		public JComponent getModule() {
 			return inventoryModule;
+		}
+		
+		// update icons
+		public void update() {
+			for (ItemIcon item: inventorySlots) {
+				item.setIcon(item.icon());
+			}
 		}
 		
 		public ItemsAndCharacters.Item take(String itemName) {
@@ -234,8 +245,9 @@ public class PlayerUI {
 			for (int i = 0; i < inventorySlots.length; i++)
 				((ItemIcon)inventorySlots[i]).setItem(player.inventory().getItem(i));
 		}
-		
 		public ItemsAndCharacters.Item replace(int itemIndex, ItemsAndCharacters.Item item) {
+			inventorySlots[itemIndex].setItem(item);
+			update();
 			return this.inventory.replace(itemIndex, item);
 		}
 		
@@ -247,8 +259,7 @@ public class PlayerUI {
 			/* constructors */
 			public ItemIcon(ItemsAndCharacters.Item item) {
 				super();
-				this.item = item;
-				this.setIcon(icon());
+				setItem(item);
 				this.setPreferredSize(new Dimension(SLOT_SIZE, SLOT_SIZE));
 				this.setSize(SLOT_SIZE, SLOT_SIZE);
 			}
@@ -261,6 +272,7 @@ public class PlayerUI {
 			// TODO make this change the item icon as well
 			public void setItem(ItemsAndCharacters.Item item) {
 				this.item = item;
+				this.setIcon(icon()); 
 			}
 		}
 		

@@ -18,7 +18,7 @@ public class Item {
 		if (new java.io.File(Configurations.path_ImagesAndIcons + relativeIconPath).exists())
 			this.icon = new ImageIcon(Configurations.path_ImagesAndIcons + relativeIconPath);
 		else if (relativeIconPath == null)
-			this.icon = new ImageIcon(Configurations.path_ImagesAndIcons + "/NoItem/defaultItem.png");
+			this.icon = new ImageIcon(defaultIcon());
 		else
 			this.icon = new ImageIcon(Configurations.path_ImagesAndIcons + "NoItem/NoItem.png");
 	}
@@ -42,7 +42,7 @@ public class Item {
 	}
 	
 	public static String defaultIcon() {
-		return Configurations.path_ImagesAndIcons + "/NoItem/DefaultItem.png";
+		return Configurations.path_ImagesAndIcons + "NoItem/DefaultItem.png";
 	}
 	
 	@Override

@@ -1,7 +1,5 @@
 package ItemsAndCharacters;
 
-import Configurations.Configurations;
-
 public class Weapon extends Item {
 	/* variables */
 	private int damage;
@@ -31,8 +29,9 @@ public class Weapon extends Item {
 	}
 	
 	// override default icon static method
+	// returns RELATIVE path only, item class joins with absolute path
 	public static String defaultIcon() {
-		return Configurations.path_ImagesAndIcons + "/NoItem/DefaultWeapon.png";
+		return "NoItem/DefaultWeapon.png";
 	}
 	
 	@Override

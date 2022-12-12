@@ -19,7 +19,6 @@ public class Armor extends Item {
 	}
 	public Armor() { // default armor
 		this("No armor", defaultIcon(), 0);
-		this.armor = 0;
 	}
 	
 	/* methods */
@@ -27,8 +26,10 @@ public class Armor extends Item {
 		return armor;
 	}
 	
+	// override default static icon method
+	// returns RELATIVE path only, item class joins with absolute path
 	public static String defaultIcon() {
-		return Configurations.path_ImagesAndIcons + "/NoItem/DefaultArmor.png";
+		return "NoItem/DefaultArmor.png";
 	}
 	
 	@Override
