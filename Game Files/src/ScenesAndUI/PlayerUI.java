@@ -6,6 +6,8 @@
 package ScenesAndUI;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
+
 import java.awt.*;
 import java.awt.event.*;
 import ItemsAndCharacters.CharacterEntity;
@@ -29,7 +31,7 @@ public class PlayerUI {
 	
 	private JComponent UI_playerHealthBar; // UI health bar component
 	private JComponent playerHealthBar; // shows player health, the bar itself
-	Dimension healthBarDimensions = new Dimension(300, 50);
+	private final Dimension healthBarDimensions = new Dimension(300, 50);
 	
 	private UI_Inventory UI_playerInventory; // UI player inventory component
 	private UI_Inventory UI_playerInventoryEquipped; // UI player equipped inventory component
@@ -37,31 +39,42 @@ public class PlayerUI {
 	private final int UI_WEAPON = 1;
 	
 	// color palette
-	final Color TRANSPARENT_BLACK = new Color(0, 0, 0, 150);
+	private final Color TRANSPARENT_BLACK = new Color(0, 0, 0, 150);
 	
 	// component margins
-	final int MARGIN = 5;
+	private final int MARGIN = 5;
 	
 	
 	/* constructors */
 	public PlayerUI(CharacterEntity player) {
 		this.player = player;
 		build();
-		show();
+		show(true); // TODO: consider, maybe create a menu screen to make it initially invisible, then show it later after the player hits "start"
 	}
 	
 	/* methods */
+	/* METHODS TO INTERACT WITH UI */
+	// paint a scene onto the screen
+	public void paintScene(JComponent scene) {
+		gameScreen.add(scene, INTERFACE_SCENE);
+	}
+	
 	// show the window
-	public void show() {
-		gameFrame.setVisible(true);
+	public void show(boolean visible) {
+		gameFrame.setVisible(visible);
+	}
+	// give and equip an item
+	public void giveWeapon(ItemsAndCharacters.Weapon weapon) {
+		ItemsAndCharacters.Item equippedItem = UI_playerInventoryEquipped.replace(UI_WEAPON, weapon);
+		if (!equippedItem.name().equals("No Item")) {
+			UI_playerInventory.give(equippedItem);
+		}
+	}
+	public ItemsAndCharacters.Armor giveArmor(ItemsAndCharacters.Armor armor) {
+		return (ItemsAndCharacters.Armor) UI_playerInventoryEquipped.replace(UI_ARMOR, armor);
 	}
 	
-	// paints the scene onto the main window
-	public void paintScene() {
-		// TODO: method stub, first figure out how to implement making scenes into the game
-	}
-	
-	// TODO
+	/* UI BUILDER */
 	// build the UI and its components
 	private void build() {
 		
@@ -140,13 +153,8 @@ public class PlayerUI {
 	// update the health bar to match the player's health
 	private void updateHealth() {
 		playerHealthBar.setSize((int) ((double)player.health() / player.maxHealth() * healthBarDimensions.width), healthBarDimensions.height);
-		gameScreen.repaint();
+		gameScreen.repaint(); // necessary: transparent background
 	}
-	// update the inventory
-	private void updateScreen() {
-		gameScreen.repaint();
-	}
-	// update the equipped inventory
 	
 	/* subclasses */
 	// inventory class, to hold items
@@ -255,6 +263,9 @@ public class PlayerUI {
 		private class ItemIcon extends JLabel {
 			/* variables */
 			private ItemsAndCharacters.Item item;
+			private JPanel interactiveMenu;
+			private int x;
+			private int y;
 			
 			/* constructors */
 			public ItemIcon(ItemsAndCharacters.Item item) {
@@ -262,6 +273,32 @@ public class PlayerUI {
 				setItem(item);
 				this.setPreferredSize(new Dimension(SLOT_SIZE, SLOT_SIZE));
 				this.setSize(SLOT_SIZE, SLOT_SIZE);
+				
+				/* construct interactive menu */
+				interactiveMenu = new JPanel();
+				interactiveMenu.setSize(100, 200);
+				interactiveMenu.setOpaque(true);
+				interactiveMenu.setBackground(TRANSPARENT_BLACK);
+				// buttons
+				
+				/* add menues to components on right click */
+				this.addMouseListener(new MouseInputAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						if (e.getButton() == MouseEvent.BUTTON3) {
+							try {
+								gameScreen.remove(interactiveMenu);
+							} catch(Exception ex) {};
+							System.out.println("Click");
+							System.out.println(e.getX() + " " + e.getY());
+							interactiveMenu.setLocation(x + e.getX(), y + e.getY()); // TODO make a way to properly position the element, otherwise it goes off of the icon internal position
+							gameScreen.add(interactiveMenu, INTERFACE_USER);
+							gameScreen.repaint();
+						} else {
+							// if (e.getX() < ) // TODO make a way to close the menu when the player click outside of the menu of the item icon
+						}
+					}
+				});
 			}
 			
 			/* methods */

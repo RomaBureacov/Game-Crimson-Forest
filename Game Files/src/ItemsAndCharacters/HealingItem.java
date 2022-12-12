@@ -6,7 +6,7 @@ public class HealingItem extends Item {
 	
 	/* constructors */
 	public HealingItem(String name, int healAmount) {
-		super(name, true);
+		// super(name, true);
 		this.healAmount = healAmount;
 	}
 	
